@@ -72,7 +72,7 @@ namespace PlaylistApp
             {
                 if (inputNumber == songNumber)
                 {
-                    Console.WriteLine($"Ispis tražebe pjesme: {songNumber} - {songTitle}");
+                    Console.WriteLine($"Naziv tražene pjesme je: {songTitle}");
 
                     return;
                 }
