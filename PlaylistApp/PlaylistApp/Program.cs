@@ -26,6 +26,7 @@ namespace PlaylistApp
                         DisplayPlaylist(playlist);
                         break;
                     case 2:
+                        DisplaySongByNumber(playlist);
                         break;
                     case 3:
                         break;
@@ -56,10 +57,34 @@ namespace PlaylistApp
         private static void DisplayPlaylist(Dictionary<int, string> playlist)
         {
             Console.WriteLine("Ispis pjesama na listi:");
-            foreach ((int songnumber, string songName) in playlist)
+            foreach ((int songnumber, string songTitle) in playlist)
             {
-                Console.WriteLine($"{songnumber}. - {songName}");
+                Console.WriteLine($"{songnumber}. - {songTitle}");
             }
+        }
+
+        private static void DisplaySongByNumber(Dictionary<int, string> playlist)
+        {
+            Console.WriteLine("Unesite redni broj tražene pjesme: ");
+            var inputNumber = int.Parse(Console.ReadLine());
+
+            foreach ((int songNumber, string songTitle) in playlist)
+            {
+                if (inputNumber == songNumber)
+                {
+                    Console.WriteLine($"Ispis tražebe pjesme: {songNumber} - {songTitle}");
+
+                    return;
+                }
+            }
+
+            Console.WriteLine($"Pjesma sa rednim brojem {inputNumber} nije pronađena.");
+            Console.WriteLine("Ukoliko želite ponoviti pretragu rednim brojem unesite: 0");
+            Console.WriteLine("Ukoliko želite povratak na početni menu unesite: 1");
+
+            var inputOption = int.Parse(Console.ReadLine());
+
+            if (inputOption == 0) DisplaySongByNumber(playlist);
         }
 
         static int FetchUsersInputFromMenu()
