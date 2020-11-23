@@ -15,9 +15,9 @@ namespace PlaylistApp
         {
             var usersInput = 0;
             Dictionary<int, string> playlist = new Dictionary<int, string>();
-            playlist.Add(1, "abdb");
-            playlist.Add(2, "a4vgtvdb");
-            playlist.Add(3, "oifvhcdb");
+            playlist.Add(0, "abdb");
+            playlist.Add(1, "a4vgtvdb");
+            playlist.Add(2, "oifvhcdb");
 
             Console.WriteLine("Dobrodošli u Playlist aplikaciju.");
 
@@ -38,6 +38,7 @@ namespace PlaylistApp
                         DisplaySongByTitle(playlist);
                         break;
                     case 4:
+                        AddNewSong(playlist);
                         break;
                     case 5:
                         break;
@@ -80,7 +81,7 @@ namespace PlaylistApp
             if (title.Equals(Constants.songNotFoundTitle))
             {
                 Console.WriteLine($"Pjesma sa rednim brojem {inputNumber} nije pronađena.");
-                var inputOption = FetchUsersInputForNotFoundSong();
+                var inputOption = FetchUsersInputForNonExpectedBehaviour();
 
                 if (inputOption == 0) DisplaySongByNumber(playlist);
                 
@@ -101,7 +102,7 @@ namespace PlaylistApp
             if (number == Constants.songNotFoundNumber)
             {
                 Console.WriteLine($"Pjesma sa nazivom {inputTitle} nije pronađena.");
-                var inputOption = FetchUsersInputForNotFoundSong();
+                var inputOption = FetchUsersInputForNonExpectedBehaviour();
 
                 if (inputOption == 0) DisplaySongByTitle(playlist);
 
@@ -110,6 +111,28 @@ namespace PlaylistApp
             }
 
             Console.WriteLine($"Redni broj tražene pjesme je: {number}");
+        }
+
+        private static void AddNewSong(Dictionary<int, string> playlist)
+        {
+            int newSongNumber = playlist.Count;
+            string newSongTitle;
+
+            Console.WriteLine("Unesite naziv nove pjesme:");
+            newSongTitle = Console.ReadLine();
+
+            var isNewSongDataValid = ValidateNewSongData(newSongNumber, newSongTitle, playlist);
+
+            if (isNewSongDataValid)
+            {
+                playlist.Add(newSongNumber, newSongTitle);
+            }
+            else
+            {
+                var inputOption = FetchUsersInputForNonExpectedBehaviour();
+                if (inputOption == 0) AddNewSong(playlist);
+            }
+
         }
 
         private static (int number, string title) ProvideSongByUsersInput(int searchingNumber, string searchingTitle, Dictionary<int, string> playlist)
@@ -128,15 +151,40 @@ namespace PlaylistApp
             return song;
         }
 
+        private static bool ValidateNewSongData(int newSongNumber, string newSongTitle, Dictionary<int, string> playlist)
+        {
+            var (foundNumber, foundTitle) = ProvideSongByUsersInput(newSongNumber, newSongTitle, playlist);
+
+            if (foundNumber != Constants.songNotFoundNumber)
+            {
+                Console.WriteLine("Pjesma pod tim nazivom već postoji u listi!");
+                return false;
+            }
+
+            if (foundTitle.Equals(Constants.songNotFoundTitle) == false)
+            {
+                Console.WriteLine("Pjesma pod tim rednim brojem već postoji u listi!");
+                return false;
+            }
+
+            if (playlist.Count != newSongNumber)
+            {
+                Console.WriteLine($"Unesen broj pjesme nije validan, nesmije biti prazno mjesto u listi nakon zadnje pjesme (koja je pod rbr-om {playlist.Count}.).");
+                return false;
+            }
+
+            return true;
+        }
+
         static int FetchUsersInputFromMenu()
         {
             DisplayMenu();
             return int.Parse(Console.ReadLine());
         }
 
-        static int FetchUsersInputForNotFoundSong()
+        static int FetchUsersInputForNonExpectedBehaviour()
         {
-            Console.WriteLine("Ukoliko želite ponoviti pretragu rednim brojem unesite: 0");
+            Console.WriteLine("Ukoliko želite ponoviti prethodnu radnju unesite: 0");
             Console.WriteLine("Ukoliko želite povratak na početni menu unesite: 1");
 
             return int.Parse(Console.ReadLine());
