@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PlaylistApp
 {
@@ -7,13 +8,44 @@ namespace PlaylistApp
         static void Main(string[] args)
         {
             var usersInput = 0;
-            
+            Dictionary<int, string> playlist = new Dictionary<int, string>();
+
+            Console.WriteLine("Dobrodošli u Playlist aplikaciju.");
+
             do
             {
                 Console.Clear();
                 usersInput = FetchUsersInputFromMenu();
-                Console.WriteLine("You have inputed " + usersInput);
+
+                switch (usersInput)
+                {
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        break;
+                    case 5:
+                        break;
+                    case 6:
+                        break;
+                    case 7:
+                        break;
+                    case 8:
+                        break;
+                    case 9:
+                        break;
+                    case 10:
+                        break;
+                    case 11:
+                        break;
+                }
+
             } while (usersInput != 0);
+
+            Console.WriteLine("Hvala na korištenju Playlist aplikacije.");
         }
 
         static int FetchUsersInputFromMenu()
