@@ -35,6 +35,7 @@ namespace PlaylistApp
                         DisplaySongByNumber(playlist);
                         break;
                     case 3:
+                        DisplaySongByTitle(playlist);
                         break;
                     case 4:
                         break;
@@ -79,10 +80,7 @@ namespace PlaylistApp
             if (title.Equals(Constants.songNotFoundTitle))
             {
                 Console.WriteLine($"Pjesma sa rednim brojem {inputNumber} nije pronađena.");
-                Console.WriteLine("Ukoliko želite ponoviti pretragu rednim brojem unesite: 0");
-                Console.WriteLine("Ukoliko želite povratak na početni menu unesite: 1");
-
-                var inputOption = int.Parse(Console.ReadLine());
+                var inputOption = FetchUsersInputForNotFoundSong();
 
                 if (inputOption == 0) DisplaySongByNumber(playlist);
                 
@@ -93,9 +91,25 @@ namespace PlaylistApp
             Console.WriteLine($"Naziv tražene pjesme je: {title}");
         }
 
-        private static void DisplaySongNumberByTitle(Dictionary<int, string> playlist)
-        { 
-            
+        private static void DisplaySongByTitle(Dictionary<int, string> playlist)
+        {
+            Console.WriteLine("Unesite naziv tražene pjesme: ");
+            var inputTitle = Console.ReadLine();
+
+            var (number, _) = ProvideSongByUsersInput(Constants.songNotFoundNumber, inputTitle, playlist);
+
+            if (number == Constants.songNotFoundNumber)
+            {
+                Console.WriteLine($"Pjesma sa nazivom {inputTitle} nije pronađena.");
+                var inputOption = FetchUsersInputForNotFoundSong();
+
+                if (inputOption == 0) DisplaySongByTitle(playlist);
+
+                //return za input-case povratka na početni menu
+                return;
+            }
+
+            Console.WriteLine($"Redni broj tražene pjesme je: {number}");
         }
 
         private static (int number, string title) ProvideSongByUsersInput(int searchingNumber, string searchingTitle, Dictionary<int, string> playlist)
@@ -120,12 +134,20 @@ namespace PlaylistApp
             return int.Parse(Console.ReadLine());
         }
 
+        static int FetchUsersInputForNotFoundSong()
+        {
+            Console.WriteLine("Ukoliko želite ponoviti pretragu rednim brojem unesite: 0");
+            Console.WriteLine("Ukoliko želite povratak na početni menu unesite: 1");
+
+            return int.Parse(Console.ReadLine());
+        }
+
         static void DisplayMenu()
         {
             Console.WriteLine("Odaberite akciju:");
             Console.WriteLine("1 - Ispis cijele liste");
-            Console.WriteLine("2 - Ispis imena pjesme unosom pripadajućeg rednog broja");
-            Console.WriteLine("3 - Ispis rednog broja pjesme unosom pripadajućeg broja");
+            Console.WriteLine("2 - Ispis imena pjesme unosom rednog broja pjesme");
+            Console.WriteLine("3 - Ispis rednog broja pjesme unosom imena pjesme");
             Console.WriteLine("4 - Unos nove pjesme");
             Console.WriteLine("5 - Brisanje pjesme po rednom broju");
             Console.WriteLine("6 - Brisanje pjesme po imenu");
