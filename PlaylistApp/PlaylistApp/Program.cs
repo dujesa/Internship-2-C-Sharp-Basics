@@ -9,17 +9,21 @@ namespace PlaylistApp
         {
             var usersInput = 0;
             Dictionary<int, string> playlist = new Dictionary<int, string>();
+            playlist.Add(1, "abdb");
+            playlist.Add(2, "a4vgtvdb");
+            playlist.Add(3, "oifvhcdb");
 
             Console.WriteLine("Dobrodošli u Playlist aplikaciju.");
 
             do
             {
-                Console.Clear();
                 usersInput = FetchUsersInputFromMenu();
+                Console.Clear();
 
                 switch (usersInput)
                 {
                     case 1:
+                        DisplayPlaylist(playlist);
                         break;
                     case 2:
                         break;
@@ -42,10 +46,20 @@ namespace PlaylistApp
                     case 11:
                         break;
                 }
+                Console.WriteLine();
 
             } while (usersInput != 0);
 
             Console.WriteLine("Hvala na korištenju Playlist aplikacije.");
+        }
+
+        private static void DisplayPlaylist(Dictionary<int, string> playlist)
+        {
+            Console.WriteLine("Ispis pjesama na listi:");
+            foreach ((int songnumber, string songName) in playlist)
+            {
+                Console.WriteLine($"{songnumber}. - {songName}");
+            }
         }
 
         static int FetchUsersInputFromMenu()
