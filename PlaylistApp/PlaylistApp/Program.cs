@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 namespace PlaylistApp
 {
+    static class Constants
+    {
+        public const int songNotFoundNumber = -1;
+        public const string songNotFoundTitle = "Not found";
+    }
+
     class Program
     {
         static void Main(string[] args)
@@ -68,23 +74,44 @@ namespace PlaylistApp
             Console.WriteLine("Unesite redni broj tražene pjesme: ");
             var inputNumber = int.Parse(Console.ReadLine());
 
+            var (_, title) = ProvideSongByUsersInput(inputNumber, "", playlist);
+
+            if (title.Equals(Constants.songNotFoundTitle))
+            {
+                Console.WriteLine($"Pjesma sa rednim brojem {inputNumber} nije pronađena.");
+                Console.WriteLine("Ukoliko želite ponoviti pretragu rednim brojem unesite: 0");
+                Console.WriteLine("Ukoliko želite povratak na početni menu unesite: 1");
+
+                var inputOption = int.Parse(Console.ReadLine());
+
+                if (inputOption == 0) DisplaySongByNumber(playlist);
+                
+                //return za input-case povratka na početni menu
+                return;
+            }
+
+            Console.WriteLine($"Naziv tražene pjesme je: {title}");
+        }
+
+        private static void DisplaySongNumberByTitle(Dictionary<int, string> playlist)
+        { 
+            
+        }
+
+        private static (int number, string title) ProvideSongByUsersInput(int searchingNumber, string searchingTitle, Dictionary<int, string> playlist)
+        {
+            var song = (Constants.songNotFoundNumber, Constants.songNotFoundTitle);
+
             foreach ((int songNumber, string songTitle) in playlist)
             {
-                if (inputNumber == songNumber)
+                if (searchingNumber == songNumber || searchingTitle == songTitle)
                 {
-                    Console.WriteLine($"Naziv tražene pjesme je: {songTitle}");
-
-                    return;
+                    song = (songNumber, songTitle);
+                    break;
                 }
             }
 
-            Console.WriteLine($"Pjesma sa rednim brojem {inputNumber} nije pronađena.");
-            Console.WriteLine("Ukoliko želite ponoviti pretragu rednim brojem unesite: 0");
-            Console.WriteLine("Ukoliko želite povratak na početni menu unesite: 1");
-
-            var inputOption = int.Parse(Console.ReadLine());
-
-            if (inputOption == 0) DisplaySongByNumber(playlist);
+            return song;
         }
 
         static int FetchUsersInputFromMenu()
