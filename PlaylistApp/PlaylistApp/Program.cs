@@ -15,9 +15,6 @@ namespace PlaylistApp
         {
             var usersInput = 0;
             Dictionary<int, string> playlist = new Dictionary<int, string>();
-            playlist.Add(0, "abdb");
-            playlist.Add(1, "a4vgtvdb");
-            playlist.Add(2, "oifvhcdb");
 
             Console.WriteLine("Dobrodošli u Playlist aplikaciju.");
 
@@ -41,6 +38,7 @@ namespace PlaylistApp
                         AddNewSong(playlist);
                         break;
                     case 5:
+                        DeleteSongByNumber(playlist);
                         break;
                     case 6:
                         break;
@@ -115,7 +113,7 @@ namespace PlaylistApp
 
         private static void AddNewSong(Dictionary<int, string> playlist)
         {
-            int newSongNumber = playlist.Count;
+            int newSongNumber = playlist.Count + 1;
             string newSongTitle;
 
             Console.WriteLine("Unesite naziv nove pjesme:");
@@ -131,6 +129,41 @@ namespace PlaylistApp
             {
                 var inputOption = FetchUsersInputForNonExpectedBehaviour();
                 if (inputOption == 0) AddNewSong(playlist);
+            }
+
+        }
+
+        private static void DeleteSongByNumber(Dictionary<int, string> playlist)
+        {
+            Console.WriteLine("Unesite redni broj tražene pjesme: ");
+            var inputNumber = int.Parse(Console.ReadLine());
+
+            var (_, title) = ProvideSongByUsersInput(inputNumber, "", playlist);
+
+            if (title.Equals(Constants.songNotFoundTitle))
+            {
+                Console.WriteLine($"Pjesma sa rednim brojem {inputNumber} nije pronađena.");
+                var inputOption = FetchUsersInputForNonExpectedBehaviour();
+
+                if (inputOption == 0) DeleteSongByNumber(playlist);
+
+                //return za input-case povratka na početni menu
+                return;
+            }
+
+            Console.WriteLine($"Jeste li sigurni da želite izbrisati pjesmu '{title}'?");
+            Console.WriteLine("Unesite:"); 
+            Console.WriteLine("0 - Odustani od brisanja pjesme");
+            Console.WriteLine("1 - Izbriši pjesmu"); 
+
+            var isDeletionConfirmed = 0;
+            isDeletionConfirmed = int.Parse(Console.ReadLine());
+
+            if (isDeletionConfirmed == 1) 
+            {
+                RemoveSongFromPlaylist(inputNumber, playlist);
+
+                Console.WriteLine($"Pjesma '{title}' je izbrisana.");
             }
 
         }
@@ -167,13 +200,24 @@ namespace PlaylistApp
                 return false;
             }
 
-            if (playlist.Count != newSongNumber)
+            if (playlist.Count + 1 != newSongNumber)
             {
                 Console.WriteLine($"Unesen broj pjesme nije validan, nesmije biti prazno mjesto u listi nakon zadnje pjesme (koja je pod rbr-om {playlist.Count}.).");
                 return false;
             }
 
             return true;
+        }
+
+        private static void RemoveSongFromPlaylist(int songNumber, Dictionary<int, string> playlist)
+        {
+            playlist.Remove(songNumber);
+
+            for (var i = songNumber; i <= playlist.Count; i++)
+            {
+                playlist[i] = playlist[i + 1];
+                playlist.Remove(i + 1);
+            }     
         }
 
         static int FetchUsersInputFromMenu()
