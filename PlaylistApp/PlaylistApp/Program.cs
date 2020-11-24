@@ -55,8 +55,7 @@ namespace PlaylistApp
                         EditSongNumber(playlist);
                         break;
                     case 10:
-                        break;
-                    case 11:
+                        ShuffleSongs(playlist);
                         break;
                     case 21:
                         ExportPlaylist(playlist);
@@ -293,6 +292,33 @@ namespace PlaylistApp
             playlist[secondInputNumber] = firstSongTitle;
 
             Console.WriteLine($"Mjesta pjesama '{firstSongTitle}' i '{secondSongTitle}' su uspješno zamjenjena.");
+        }
+
+        private static void ShuffleSongs(Dictionary<int, string> playlist)
+        {
+            List<int> numberList = new List<int>(playlist.Count);
+            Random random = new Random();
+
+            foreach (var song in playlist)
+            {
+                numberList.Add(song.Key);                
+            }
+
+            for (int i = 1; i < playlist.Count; i++)
+            {
+                int randomNumber = random.Next(0, numberList.Count);
+
+                var shuffleIndex = numberList[randomNumber];
+
+                var helperSongContainer = playlist[i];
+                playlist[i] = playlist[shuffleIndex];
+                playlist[shuffleIndex] = helperSongContainer;
+
+                numberList.RemoveAt(randomNumber);
+            }
+
+            Console.WriteLine("Lista pjesama izmješana!");
+            DisplayPlaylist(playlist);
         }
 
         private static void ExportPlaylist(Dictionary<int, string> playlist)
