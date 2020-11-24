@@ -41,6 +41,7 @@ namespace PlaylistApp
                         DeleteSongByNumber(playlist);
                         break;
                     case 6:
+                        DeleteSongByTitle(playlist);
                         break;
                     case 7:
                         break;
@@ -150,22 +151,29 @@ namespace PlaylistApp
                 //return za input-case povratka na početni menu
                 return;
             }
+                
+            RemoveSongFromPlaylist(inputNumber, playlist);
+        }
 
-            Console.WriteLine($"Jeste li sigurni da želite izbrisati pjesmu '{title}'?");
-            Console.WriteLine("Unesite:"); 
-            Console.WriteLine("0 - Odustani od brisanja pjesme");
-            Console.WriteLine("1 - Izbriši pjesmu"); 
+        private static void DeleteSongByTitle(Dictionary<int, string> playlist)
+        {
+            Console.WriteLine("Unesite naziv tražene pjesme: ");
+            var inputTitle = Console.ReadLine();
 
-            var isDeletionConfirmed = 0;
-            isDeletionConfirmed = int.Parse(Console.ReadLine());
+            var (number, _) = ProvideSongByUsersInput(Constants.songNotFoundNumber, inputTitle, playlist);
 
-            if (isDeletionConfirmed == 1) 
+            if (number == Constants.songNotFoundNumber)
             {
-                RemoveSongFromPlaylist(inputNumber, playlist);
+                Console.WriteLine($"Pjesma sa nazivom {inputTitle} nije pronađena.");
+                var inputOption = FetchUsersInputForNonExpectedBehaviour();
 
-                Console.WriteLine($"Pjesma '{title}' je izbrisana.");
+                if (inputOption == 0) DeleteSongByTitle(playlist);
+
+                //return za input-case povratka na početni menu
+                return;
             }
 
+            RemoveSongFromPlaylist(number, playlist);
         }
 
         private static (int number, string title) ProvideSongByUsersInput(int searchingNumber, string searchingTitle, Dictionary<int, string> playlist)
@@ -211,13 +219,26 @@ namespace PlaylistApp
 
         private static void RemoveSongFromPlaylist(int songNumber, Dictionary<int, string> playlist)
         {
+            var title = playlist[songNumber];
+
+            Console.WriteLine($"Jeste li sigurni da želite izbrisati pjesmu '{title}'?");
+
+            var isDeletionConfirmed = FetchUserConfirmation();
+
+            if (isDeletionConfirmed == false)
+            {
+                return;
+            }
+
             playlist.Remove(songNumber);
 
             for (var i = songNumber; i <= playlist.Count; i++)
             {
                 playlist[i] = playlist[i + 1];
                 playlist.Remove(i + 1);
-            }     
+            }
+
+            Console.WriteLine($"Pjesma '{title}' je izbrisana.");
         }
 
         static int FetchUsersInputFromMenu()
@@ -232,6 +253,17 @@ namespace PlaylistApp
             Console.WriteLine("Ukoliko želite povratak na početni menu unesite: 1");
 
             return int.Parse(Console.ReadLine());
+        }
+
+        static bool FetchUserConfirmation()
+        {
+            Console.WriteLine("Unesite:");
+            Console.WriteLine("0 - Odustani");
+            Console.WriteLine("1 - Potvrdi");
+
+            var confirmationInput = int.Parse(Console.ReadLine());
+
+            return (confirmationInput == 1);
         }
 
         static void DisplayMenu()
