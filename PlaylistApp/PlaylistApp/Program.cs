@@ -50,6 +50,7 @@ namespace PlaylistApp
                         EditSongTitle(playlist);
                         break;
                     case 9:
+                        EditSongNumber(playlist);
                         break;
                     case 10:
                         break;
@@ -236,6 +237,56 @@ namespace PlaylistApp
             Console.WriteLine($"Pjesma je uspješno preimenovana iz '{inputTitle}' u '{newTitle}'");
         }
 
+        private static void EditSongNumber(Dictionary<int, string> playlist)
+        {
+            string secondSongTitle;
+            int secondInputNumber;
+
+            Console.WriteLine("Unesite redni broj tražene pjesme: ");
+            var firstInputNumber = int.Parse(Console.ReadLine());
+
+            var (_, firstSongTitle) = ProvideSongByUsersInput(firstInputNumber, "", playlist);
+
+            if (firstSongTitle.Equals(Constants.songNotFoundTitle))
+            {
+                Console.WriteLine($"Pjesma sa rednim brojem {firstInputNumber} nije pronađena.");
+                var inputOption = FetchUsersInputForNonExpectedBehaviour();
+
+                if (inputOption == 0) EditSongNumber(playlist);
+
+                //return za input-case povratka na početni menu
+                return;
+            }
+
+            while (true)
+            { 
+                Console.WriteLine($"Unesite redni broj pjesme sa kojom želite zamjeniti pjesmu '{firstSongTitle}':");
+                var replacementInputNumber = int.Parse(Console.ReadLine());
+
+                var (_, replacementSongTitle) = ProvideSongByUsersInput(replacementInputNumber, "", playlist);
+
+                if (replacementSongTitle.Equals(Constants.songNotFoundTitle))
+                {
+                    Console.WriteLine($"Pjesma sa rednim brojem {replacementInputNumber} nije pronađena.");
+                    var inputOption = FetchUsersInputForNonExpectedBehaviour();
+
+                    if (inputOption != 0) return;
+                }
+                else
+                {
+                    secondSongTitle = replacementSongTitle;
+                    secondInputNumber = replacementInputNumber;
+                    break;
+                }
+
+            }
+
+            playlist[firstInputNumber] = secondSongTitle;
+            playlist[secondInputNumber] = firstSongTitle;
+
+            Console.WriteLine($"Mjesta pjesama '{firstSongTitle}' i '{secondSongTitle}' su uspješno zamjenjena.");
+        }
+
         private static (int number, string title) ProvideSongByUsersInput(int searchingNumber, string searchingTitle, Dictionary<int, string> playlist)
         {
             var song = (Constants.songNotFoundNumber, Constants.songNotFoundTitle);
@@ -347,8 +398,10 @@ namespace PlaylistApp
             Console.WriteLine("8 - Uređivanje imena pjesme");
             Console.WriteLine("9 - Uređivanje rednog broja pjesme");
             Console.WriteLine("10 - Shuffle pjesama");
-            Console.WriteLine("11 - Izvoz liste pjesama u eksternu datoteku");
             Console.WriteLine("0 - Izlaz iz aplikacije");
+            Console.WriteLine("---- Akcije za olakšavanje developmenta i testiranja ----");
+            Console.WriteLine("21 - Save playlist (Izvoz liste pjesama u eksternu datoteku)");
+            Console.WriteLine("22 - Load playlist (Uvoz liste pjesama iz eksternu datoteku)");
         }
     }
 
