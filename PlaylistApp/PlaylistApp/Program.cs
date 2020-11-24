@@ -152,14 +152,10 @@ namespace PlaylistApp
             }
 
             Console.WriteLine($"Jeste li sigurni da želite izbrisati pjesmu '{title}'?");
-            Console.WriteLine("Unesite:"); 
-            Console.WriteLine("0 - Odustani od brisanja pjesme");
-            Console.WriteLine("1 - Izbriši pjesmu"); 
 
-            var isDeletionConfirmed = 0;
-            isDeletionConfirmed = int.Parse(Console.ReadLine());
+            var isDeletionConfirmed = FetchUserConfirmation();
 
-            if (isDeletionConfirmed == 1) 
+            if (isDeletionConfirmed) 
             {
                 RemoveSongFromPlaylist(inputNumber, playlist);
 
@@ -232,6 +228,17 @@ namespace PlaylistApp
             Console.WriteLine("Ukoliko želite povratak na početni menu unesite: 1");
 
             return int.Parse(Console.ReadLine());
+        }
+
+        static bool FetchUserConfirmation()
+        {
+            Console.WriteLine("Unesite:");
+            Console.WriteLine("0 - Odustani");
+            Console.WriteLine("1 - Potvrdi");
+
+            var confirmationInput = int.Parse(Console.ReadLine());
+
+            return (confirmationInput == 1);
         }
 
         static void DisplayMenu()
