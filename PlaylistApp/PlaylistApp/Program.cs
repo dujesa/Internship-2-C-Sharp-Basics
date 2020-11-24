@@ -44,6 +44,7 @@ namespace PlaylistApp
                         DeleteSongByTitle(playlist);
                         break;
                     case 7:
+                        DeletePlaylist(playlist);
                         break;
                     case 8:
                         break;
@@ -174,6 +175,22 @@ namespace PlaylistApp
             }
 
             RemoveSongFromPlaylist(number, playlist);
+        }
+
+        private static void DeletePlaylist(Dictionary<int, string> playlist)
+        {
+            Console.WriteLine($"Jeste li sigurni da želite izbrisati cijelu listu pjesama?");
+
+            var isDeletionConfirmed = FetchUserConfirmation();
+
+            if (isDeletionConfirmed == false)
+            {
+                return;
+            }
+
+            playlist.Clear();
+
+            Console.WriteLine("Lista je pobrisana.");
         }
 
         private static (int number, string title) ProvideSongByUsersInput(int searchingNumber, string searchingTitle, Dictionary<int, string> playlist)
