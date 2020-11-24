@@ -47,6 +47,7 @@ namespace PlaylistApp
                         DeletePlaylist(playlist);
                         break;
                     case 8:
+                        EditSongTitle(playlist);
                         break;
                     case 9:
                         break;
@@ -121,7 +122,7 @@ namespace PlaylistApp
             Console.WriteLine("Unesite naziv nove pjesme:");
             newSongTitle = Console.ReadLine();
 
-            var newSongDataState = ValidateNewSongData(newSongNumber, newSongTitle, playlist);
+            var (newSongDataState, validationMessage) = ValidateNewSongData(newSongNumber, newSongTitle, playlist);
 
             if (newSongDataState == SongValidationStates.Valid)
             {
@@ -129,6 +130,8 @@ namespace PlaylistApp
             }
             else
             {
+                Console.WriteLine(validationMessage);
+
                 var inputOption = FetchUsersInputForNonExpectedBehaviour();
                 if (inputOption == 0) AddNewSong(playlist);
             }
@@ -193,6 +196,46 @@ namespace PlaylistApp
             Console.WriteLine("Lista je pobrisana.");
         }
 
+        private static void EditSongTitle(Dictionary<int, string> playlist)
+        {
+            Console.WriteLine("Unesite naziv pjesme koji želite urediti:");
+            var inputTitle = Console.ReadLine();
+
+            var (number, _) = ProvideSongByUsersInput(Constants.songNotFoundNumber, inputTitle, playlist);
+
+            if (number == Constants.songNotFoundNumber)
+            {
+                Console.WriteLine($"Pjesma sa nazivom {inputTitle} nije pronađena.");
+                var inputOption = FetchUsersInputForNonExpectedBehaviour();
+
+                if (inputOption == 0) EditSongTitle(playlist);
+
+                //return za input-case povratka na početni menu
+                return;
+            }
+
+            Console.WriteLine("Unesite novi naziv za pjesmu:");
+            var newTitle = Console.ReadLine();
+
+            var (newSongDataState, validationMessage) = ValidateNewSongData(number, newTitle, playlist);
+            bool isNewSongDataValid = (newSongDataState == SongValidationStates.Valid || newSongDataState == SongValidationStates.ExistentNumber);
+            
+            if (isNewSongDataValid == false)
+            {
+                Console.WriteLine(validationMessage);
+                Console.WriteLine("Uređivanje naziva pjesme je neuspješno.");
+                var inputOption = FetchUsersInputForNonExpectedBehaviour();
+
+                if (inputOption == 0) EditSongTitle(playlist);
+
+                //return za input-case povratka na početni menu
+                return;
+            }
+
+            playlist[number] = newTitle;
+            Console.WriteLine($"Pjesma je uspješno preimenovana iz '{inputTitle}' u '{newTitle}'");
+        }
+
         private static (int number, string title) ProvideSongByUsersInput(int searchingNumber, string searchingTitle, Dictionary<int, string> playlist)
         {
             var song = (Constants.songNotFoundNumber, Constants.songNotFoundTitle);
@@ -209,39 +252,37 @@ namespace PlaylistApp
             return song;
         }
 
-        private static SongValidationStates ValidateNewSongData(int newSongNumber, string newSongTitle, Dictionary<int, string> playlist)
+        private static (SongValidationStates, string) ValidateNewSongData(int newSongNumber, string newSongTitle, Dictionary<int, string> playlist)
         {
+            if (newSongTitle.Length == 0)
+            {
+                return (SongValidationStates.InvalidTitle, "Pjesma nemože imati prazan naziv!");
+            }
+
             var (foundNumber, foundTitle) = ProvideSongByUsersInput(newSongNumber, newSongTitle, playlist);
 
-            if (foundNumber != Constants.songNotFoundNumber && foundTitle.Equals(Constants.songNotFoundTitle) == false)
+            if (foundNumber != Constants.songNotFoundNumber && foundTitle.Equals(newSongTitle))
             {
-                Console.WriteLine("Pjesma pod tim nazivom i rednim brojem već postoji u listi!");
-                return SongValidationStates.ExistentNumberAndTitle;
+                return (SongValidationStates.ExistentNumberAndTitle, "Pjesma pod tim nazivom i rednim brojem već postoji u listi!");
             }
 
             if (foundNumber != Constants.songNotFoundNumber)
             {
-                Console.WriteLine("Pjesma pod tim nazivom već postoji u listi!");
-
-                return SongValidationStates.ExistentNumber;
+                return (SongValidationStates.ExistentNumber, "Pjesma pod tim rednim brojem već postoji u listi!");
             }
 
-            if (foundTitle.Equals(Constants.songNotFoundTitle) == false)
+            if (foundTitle.Equals(newSongTitle))
             {
-                Console.WriteLine("Pjesma pod tim rednim brojem već postoji u listi!");
-
-                return SongValidationStates.ExistentTitle;
+                return (SongValidationStates.ExistentTitle, "Pjesma pod tim nazivom već postoji u listi!");
             }
 
             if (playlist.Count + 1 != newSongNumber)
             {
-                Console.WriteLine($"Unesen broj pjesme nije validan, nesmije biti prazno mjesto u listi nakon zadnje pjesme (koja je pod rbr-om {playlist.Count}.).");
-
-                return SongValidationStates.InvalidNumber;
+                return (SongValidationStates.InvalidNumber, $"Unesen broj pjesme nije validan, nesmije biti prazno mjesto u listi nakon zadnje pjesme (koja je pod rbr-om {playlist.Count}.).");
             }
 
 
-            return SongValidationStates.Valid;
+            return (SongValidationStates.Valid, "Podaci za pjesmu su ispravni");
         }
 
         private static void RemoveSongFromPlaylist(int songNumber, Dictionary<int, string> playlist)
@@ -317,6 +358,7 @@ namespace PlaylistApp
         ExistentNumber = 1,
         ExistentTitle = 2,
         ExistentNumberAndTitle = 3,
-        InvalidNumber = 4
+        InvalidNumber = 4,
+        InvalidTitle = 5
     }
 }
