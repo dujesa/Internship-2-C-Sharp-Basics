@@ -84,7 +84,7 @@ namespace PlaylistApp
                 var inputOption = FetchUsersInputForNonExpectedBehaviour();
 
                 if (inputOption == 0) DisplaySongByNumber(playlist);
-                
+
                 //return za input-case povratka na početni menu
                 return;
             }
@@ -121,9 +121,9 @@ namespace PlaylistApp
             Console.WriteLine("Unesite naziv nove pjesme:");
             newSongTitle = Console.ReadLine();
 
-            var isNewSongDataValid = ValidateNewSongData(newSongNumber, newSongTitle, playlist);
+            var newSongDataState = ValidateNewSongData(newSongNumber, newSongTitle, playlist);
 
-            if (isNewSongDataValid)
+            if (newSongDataState == SongValidationStates.Valid)
             {
                 playlist.Add(newSongNumber, newSongTitle);
             }
@@ -152,7 +152,7 @@ namespace PlaylistApp
                 //return za input-case povratka na početni menu
                 return;
             }
-                
+
             RemoveSongFromPlaylist(inputNumber, playlist);
         }
 
@@ -209,29 +209,39 @@ namespace PlaylistApp
             return song;
         }
 
-        private static bool ValidateNewSongData(int newSongNumber, string newSongTitle, Dictionary<int, string> playlist)
+        private static SongValidationStates ValidateNewSongData(int newSongNumber, string newSongTitle, Dictionary<int, string> playlist)
         {
             var (foundNumber, foundTitle) = ProvideSongByUsersInput(newSongNumber, newSongTitle, playlist);
+
+            if (foundNumber != Constants.songNotFoundNumber && foundTitle.Equals(Constants.songNotFoundTitle) == false)
+            {
+                Console.WriteLine("Pjesma pod tim nazivom i rednim brojem već postoji u listi!");
+                return SongValidationStates.ExistentNumberAndTitle;
+            }
 
             if (foundNumber != Constants.songNotFoundNumber)
             {
                 Console.WriteLine("Pjesma pod tim nazivom već postoji u listi!");
-                return false;
+
+                return SongValidationStates.ExistentNumber;
             }
 
             if (foundTitle.Equals(Constants.songNotFoundTitle) == false)
             {
                 Console.WriteLine("Pjesma pod tim rednim brojem već postoji u listi!");
-                return false;
+
+                return SongValidationStates.ExistentTitle;
             }
 
             if (playlist.Count + 1 != newSongNumber)
             {
                 Console.WriteLine($"Unesen broj pjesme nije validan, nesmije biti prazno mjesto u listi nakon zadnje pjesme (koja je pod rbr-om {playlist.Count}.).");
-                return false;
+
+                return SongValidationStates.InvalidNumber;
             }
 
-            return true;
+
+            return SongValidationStates.Valid;
         }
 
         private static void RemoveSongFromPlaylist(int songNumber, Dictionary<int, string> playlist)
@@ -299,5 +309,14 @@ namespace PlaylistApp
             Console.WriteLine("11 - Izvoz liste pjesama u eksternu datoteku");
             Console.WriteLine("0 - Izlaz iz aplikacije");
         }
+    }
+
+    enum SongValidationStates
+    { 
+        Valid = 0,
+        ExistentNumber = 1,
+        ExistentTitle = 2,
+        ExistentNumberAndTitle = 3,
+        InvalidNumber = 4
     }
 }
