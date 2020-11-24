@@ -41,6 +41,7 @@ namespace PlaylistApp
                         DeleteSongByNumber(playlist);
                         break;
                     case 6:
+                        DeleteSongByTitle(playlist);
                         break;
                     case 7:
                         break;
@@ -172,7 +173,7 @@ namespace PlaylistApp
                 return;
             }
 
-
+            RemoveSongFromPlaylist(number, playlist);
         }
 
         private static (int number, string title) ProvideSongByUsersInput(int searchingNumber, string searchingTitle, Dictionary<int, string> playlist)
