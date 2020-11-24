@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace PlaylistApp
 {
@@ -55,6 +57,12 @@ namespace PlaylistApp
                     case 10:
                         break;
                     case 11:
+                        break;
+                    case 21:
+                        ExportPlaylist(playlist);
+                        break;
+                    case 22:
+                        playlist = ImportPlaylist();
                         break;
                 }
                 Console.WriteLine();
@@ -285,6 +293,33 @@ namespace PlaylistApp
             playlist[secondInputNumber] = firstSongTitle;
 
             Console.WriteLine($"Mjesta pjesama '{firstSongTitle}' i '{secondSongTitle}' su uspješno zamjenjena.");
+        }
+
+        private static void ExportPlaylist(Dictionary<int, string> playlist)
+        {
+            String playlistCsv = String.Join(
+                Environment.NewLine,
+                playlist.Select(
+                    song => $"{song.Key};{song.Value};"
+                )
+            );
+
+            var playlistCsvPath = System.IO.Directory.GetCurrentDirectory() + "/playlist.csv";
+            
+            System.IO.File.WriteAllText(playlistCsvPath, playlistCsv);
+            Console.WriteLine($"Spremljeno u: {playlistCsvPath}");
+        }
+
+        private static Dictionary<int, string> ImportPlaylist()
+        {
+            var playlistCsvPath = System.IO.Directory.GetCurrentDirectory() + "/playlist.csv";
+
+            var playlist = File.ReadLines(path: playlistCsvPath).Select(song => song.Split(';')).ToDictionary(song => int.Parse(song[0]), song => song[1]);
+
+            Console.WriteLine($"Lista pjesama uspješno učitana iz: {playlistCsvPath}");
+            DisplayPlaylist(playlist);
+
+            return playlist;
         }
 
         private static (int number, string title) ProvideSongByUsersInput(int searchingNumber, string searchingTitle, Dictionary<int, string> playlist)
