@@ -150,17 +150,28 @@ namespace PlaylistApp
                 //return za input-case povratka na početni menu
                 return;
             }
+                
+            RemoveSongFromPlaylist(inputNumber, playlist);
+        }
 
-            Console.WriteLine($"Jeste li sigurni da želite izbrisati pjesmu '{title}'?");
+        private static void DeleteSongByTitle(Dictionary<int, string> playlist)
+        {
+            Console.WriteLine("Unesite naziv tražene pjesme: ");
+            var inputTitle = Console.ReadLine();
 
-            var isDeletionConfirmed = FetchUserConfirmation();
+            var (number, _) = ProvideSongByUsersInput(Constants.songNotFoundNumber, inputTitle, playlist);
 
-            if (isDeletionConfirmed) 
+            if (number == Constants.songNotFoundNumber)
             {
-                RemoveSongFromPlaylist(inputNumber, playlist);
+                Console.WriteLine($"Pjesma sa nazivom {inputTitle} nije pronađena.");
+                var inputOption = FetchUsersInputForNonExpectedBehaviour();
 
-                Console.WriteLine($"Pjesma '{title}' je izbrisana.");
+                if (inputOption == 0) DeleteSongByTitle(playlist);
+
+                //return za input-case povratka na početni menu
+                return;
             }
+
 
         }
 
@@ -207,13 +218,26 @@ namespace PlaylistApp
 
         private static void RemoveSongFromPlaylist(int songNumber, Dictionary<int, string> playlist)
         {
+            var title = playlist[songNumber];
+
+            Console.WriteLine($"Jeste li sigurni da želite izbrisati pjesmu '{title}'?");
+
+            var isDeletionConfirmed = FetchUserConfirmation();
+
+            if (isDeletionConfirmed == false)
+            {
+                return;
+            }
+
             playlist.Remove(songNumber);
 
             for (var i = songNumber; i <= playlist.Count; i++)
             {
                 playlist[i] = playlist[i + 1];
                 playlist.Remove(i + 1);
-            }     
+            }
+
+            Console.WriteLine($"Pjesma '{title}' je izbrisana.");
         }
 
         static int FetchUsersInputFromMenu()
