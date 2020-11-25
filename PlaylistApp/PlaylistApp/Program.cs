@@ -15,7 +15,7 @@ namespace PlaylistApp
     {
         static void Main(string[] args)
         {
-            var usersInput = 0;
+            int usersInput;
             Dictionary<int, string> playlist = new Dictionary<int, string>();
 
             Console.WriteLine("Dobrodošli u Playlist aplikaciju.");
@@ -247,16 +247,16 @@ namespace PlaylistApp
         private static void EditSongNumber(Dictionary<int, string> playlist)
         {
             string secondSongTitle;
-            int secondInputNumber;
+            int newSongNumber;
 
             Console.WriteLine("Unesite redni broj tražene pjesme: ");
-            var firstInputNumber = int.Parse(Console.ReadLine());
+            var oldSongNumber = int.Parse(Console.ReadLine());
 
-            var (_, firstSongTitle) = ProvideSongByUsersInput(firstInputNumber, "", playlist);
+            var (_, firstSongTitle) = ProvideSongByUsersInput(oldSongNumber, "", playlist);
 
             if (firstSongTitle.Equals(Constants.songNotFoundTitle))
             {
-                Console.WriteLine($"Pjesma sa rednim brojem {firstInputNumber} nije pronađena.");
+                Console.WriteLine($"Pjesma sa rednim brojem {oldSongNumber} nije pronađena.");
                 var inputOption = FetchUsersInputForNonExpectedBehaviour();
 
                 if (inputOption == 0) EditSongNumber(playlist);
@@ -282,16 +282,15 @@ namespace PlaylistApp
                 else
                 {
                     secondSongTitle = replacementSongTitle;
-                    secondInputNumber = replacementInputNumber;
+                    newSongNumber = replacementInputNumber;
                     break;
                 }
 
             }
 
-            playlist[firstInputNumber] = secondSongTitle;
-            playlist[secondInputNumber] = firstSongTitle;
+            ReorderSongByNumber(oldSongNumber, newSongNumber, playlist);
 
-            Console.WriteLine($"Mjesta pjesama '{firstSongTitle}' i '{secondSongTitle}' su uspješno zamjenjena.");
+            Console.WriteLine($"Redni broj pjesme '{firstSongTitle}' je uspješno zamjenjen sa {oldSongNumber} na {newSongNumber}.");
         }
 
         private static void ShuffleSongs(Dictionary<int, string> playlist)
@@ -419,6 +418,29 @@ namespace PlaylistApp
             }
 
             Console.WriteLine($"Pjesma '{title}' je izbrisana.");
+        }
+
+        private static void ReorderSongByNumber(int oldNumber, int newNumber, Dictionary<int, string> playlist)
+        {
+            var replacingSongTitle = playlist[oldNumber];
+
+            if (oldNumber < newNumber)
+            {
+                for (int i = oldNumber; i < newNumber; i++)
+                {
+                    playlist[i] = playlist[i + 1];
+                }
+            }
+            else if (oldNumber > newNumber)
+            {
+                for (int i = oldNumber; i > newNumber; i--)
+                {
+                    playlist[i] = playlist[i - 1];
+                }
+            }
+
+            playlist[newNumber] = replacingSongTitle;
+
         }
 
         static int FetchUsersInputFromMenu()
