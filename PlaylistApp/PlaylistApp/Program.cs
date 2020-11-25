@@ -281,7 +281,6 @@ namespace PlaylistApp
                 }
                 else
                 {
-                    secondSongTitle = replacementSongTitle;
                     newSongNumber = replacementInputNumber;
                     break;
                 }
