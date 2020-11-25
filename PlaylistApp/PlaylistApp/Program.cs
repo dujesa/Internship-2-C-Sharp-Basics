@@ -94,7 +94,6 @@ namespace PlaylistApp
 
                 if (inputOption == 0) DisplaySongByNumber(playlist);
 
-                //return za input-case povratka na početni menu
                 return;
             }
 
@@ -115,7 +114,6 @@ namespace PlaylistApp
 
                 if (inputOption == 0) DisplaySongByTitle(playlist);
 
-                //return za input-case povratka na početni menu
                 return;
             }
 
@@ -160,7 +158,6 @@ namespace PlaylistApp
 
                 if (inputOption == 0) DeleteSongByNumber(playlist);
 
-                //return za input-case povratka na početni menu
                 return;
             }
 
@@ -181,7 +178,6 @@ namespace PlaylistApp
 
                 if (inputOption == 0) DeleteSongByTitle(playlist);
 
-                //return za input-case povratka na početni menu
                 return;
             }
 
@@ -218,7 +214,6 @@ namespace PlaylistApp
 
                 if (inputOption == 0) EditSongTitle(playlist);
 
-                //return za input-case povratka na početni menu
                 return;
             }
 
@@ -236,7 +231,6 @@ namespace PlaylistApp
 
                 if (inputOption == 0) EditSongTitle(playlist);
 
-                //return za input-case povratka na početni menu
                 return;
             }
 
@@ -246,7 +240,6 @@ namespace PlaylistApp
 
         private static void EditSongNumber(Dictionary<int, string> playlist)
         {
-            string secondSongTitle;
             int newSongNumber;
 
             Console.WriteLine("Unesite redni broj tražene pjesme: ");
@@ -261,7 +254,6 @@ namespace PlaylistApp
 
                 if (inputOption == 0) EditSongNumber(playlist);
 
-                //return za input-case povratka na početni menu
                 return;
             }
 
